@@ -19,12 +19,12 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.SWR_DOCKER_PASSWORD }}
+          password: ${{ secrets.SWR_DOCKER_USERNAME }}
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: xiaopeng163/net-box:latest
+          tags: base/net-box:latest
