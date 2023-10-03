@@ -12,6 +12,7 @@ env:
   IMAGE_NAME: 'net-box'
 jobs:
   build:
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,16 +24,14 @@ jobs:
         #  access-key-secret: ${{ secrets.SWR_SECRETACCESSKEY }}
         #  region: ${{ env.REGION_ID }}
         run: docker login -u ${{ secrets.SWR_DOCKER_USERNAME }} -p ${{ secrets.SWR_DOCKER_PASSWORD }} swr.${{ env.REGION_ID }}.myhuaweicloud.com
-      - name: Build, Tag, and Push Image to Huawei Cloud SWR
+      - name: Build
         id: push-image
         env:
           SWR_REGISTRY: swr.${{ env.REGION_ID }}.myhuaweicloud.com
           SWR_ORGANIZATION: ${{ env.SWR_ORGANIZATION }}
           IMAGE_TAG: ${{ github.sha }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
-        run:
+        run: |
           docker build -t $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG .
-      - name: push-image
-        run: docker push $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG
-      - name:
-        run: echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG"
+          docker push $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG
+          echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG"
