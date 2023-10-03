@@ -17,11 +17,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Log in to Huawei Cloud SWR
-        uses: huaweicloud/swr-login@v2.1.0
-        with:
-          access-key-id: ${{ secrets.SWR_ACCESSKEY }}
-          access-key-secret: ${{ secrets.SWR_SECRETACCESSKEY }}
-          region: ${{ env.REGION_ID }}
+        #uses: huaweicloud/swr-login@v2.1.0
+        #with:
+        #  access-key-id: ${{ secrets.SWR_ACCESSKEY }}
+        #  access-key-secret: ${{ secrets.SWR_SECRETACCESSKEY }}
+        #  region: ${{ env.REGION_ID }}
+        run: docker login -u ${{ secrets.SWR_DOCKER_USERNAME }} -p ${{ secrets.SWR_DOCKER_PASSWORD }} swr.${{ env.REGION_ID }}.myhuaweicloud.com
       - name: Build, Tag, and Push Image to Huawei Cloud SWR
         id: push-image
         env:
