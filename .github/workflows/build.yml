@@ -5,6 +5,11 @@ on:
       - 'master'
     paths:
       - 'Dockerfile'
+
+env:
+  REGION_ID: 'ap-southeast-3'
+  SWR_ORGANIZATION:  'public-base'
+  IMAGE_NAME: 'net-box'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,15 +21,20 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
+      - name: Log in to Huawei Cloud SWR
+        uses: huaweicloud/swr-login@v2.1.0
         with:
-          username: ${{ secrets.SWR_DOCKER_PASSWORD }}
-          password: ${{ secrets.SWR_DOCKER_USERNAME }}
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: base/net-box:latest
+          access-key-id: ${{ secrets.ACCESSKEY }}
+          access-key-secret: ${{ secrets.SECRETACCESSKEY }}
+          region: ${{ env.REGION_ID }}
+      - name: Build, Tag, and Push Image to Huawei Cloud SWR
+        id: push-image
+        env:
+          SWR_REGISTRY: swr.${{ env.REGION_ID }}.myhuaweicloud.com
+          SWR_ORGANIZATION: ${{ env.SWR_ORGANIZATION }}
+          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+        run:
+          docker build -t $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG
+          echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG"
